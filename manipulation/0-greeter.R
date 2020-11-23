@@ -9,11 +9,9 @@ source("./scripts/common-functions.R")
 library(tidyverse)
 library(glue)
 # ---- declare-globals ----------------------------------------------------
-# path_input <- "../data/allegations_20200726939.csv"
-path_input <- "https://raw.githubusercontent.com/rtrent/NYPDCivilianComplaintReviewBoard/master/data/allegations_20200726939.csv"
-# see  https://github.com/rtrent/NYPDCivilianComplaintReviewBoard/blob/master/import.py  for some hints about the data, but we should consider working with DB directly ( https://github.com/rtrent/NYPDCivilianComplaintReviewBoard)
-# Taps into https://projects.propublica.org/nypd-ccrb/
-
+# source: https://www.propublica.org/datastore/dataset/civilian-complaints-against-new-york-city-police-officers
+# Interactive: https://projects.propublica.org/nypd-ccrb/
+path_input <- "./data-unshared/raw/CCRB-Complaint-Data_202007271729/allegations_202007271729.csv"
 #set default ggplot theme
 ggplot2::theme_set(
   ggplot2::theme_bw(
