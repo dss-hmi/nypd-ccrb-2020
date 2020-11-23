@@ -12,6 +12,7 @@ library(glue)
 # path_input <- "../data/allegations_20200726939.csv"
 path_input <- "https://raw.githubusercontent.com/rtrent/NYPDCivilianComplaintReviewBoard/master/data/allegations_20200726939.csv"
 # see  https://github.com/rtrent/NYPDCivilianComplaintReviewBoard/blob/master/import.py  for some hints about the data, but we should consider working with DB directly ( https://github.com/rtrent/NYPDCivilianComplaintReviewBoard)
+# Taps into https://projects.propublica.org/nypd-ccrb/
 
 #set default ggplot theme
 ggplot2::theme_set(
