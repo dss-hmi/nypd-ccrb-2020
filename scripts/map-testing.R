@@ -5,8 +5,16 @@ nypd_sf <- rgdal::readOGR(
 )
 
 
+nypd_json <- rgdal::readOGR(
+  paste0(getwd(),"/data-unshared/raw/policeprecincts.geojson"))
+
 
 nypd_ready <- broom::tidy(nypd_sf, region = 'precinct')
+
+
+# allows for mergeing addational data
+
+nypd_sf_package <- geojsonsf::geojson_sf("./data-unshared/raw/policeprecincts.geojson")
 
 
 
@@ -18,6 +26,7 @@ g <- ggplot() +
 g
 
 # ---- ggmap ----
+#could use for publications
 
 library(ggmap)
 
@@ -38,6 +47,7 @@ g2 <- ggmap(nyc_map) +
 g2
 
 # --- leaflet ----
+# use for shiny
 
 library(leaflet)
 
@@ -46,3 +56,12 @@ map_leaf <- leaflet(data =  nypd_sf) %>%
   addPolygons(color = "Black")
 
 map_leaf
+
+
+
+map_sf_package <- leaflet(data =  nypd_sf_package) %>%
+  addTiles() %>%
+  addPolygons(color = "black", highlightOptions = highlightOptions(color = "white", weight = 2,
+              bringToFront = TRUE),label = ~glue::glue("This is: {precinct}"))
+
+map_sf_package
