@@ -17,6 +17,17 @@ nypd_ready <- broom::tidy(nypd_sf, region = 'precinct')
 nypd_sf_package <- geojsonsf::geojson_sf("./data-unshared/raw/policeprecincts.geojson")
 
 
+path_input <- "./data-unshared/raw/CCRB-Complaint-Data_202007271729/allegations_202007271729.csv"
+
+library(tidyverse)
+
+ds0 <- readr::read_csv(path_input)
+
+ds1 <- ds0 %>% group_by(precinct) %>% count() %>% drop_na()
+
+
+merge_data <- nypd_sf_package %>% mutate(across(precinct, as.numeric)) %>% left_join(ds1)
+
 
 library(ggplot2)
 g <- ggplot() +
@@ -65,3 +76,28 @@ map_sf_package <- leaflet(data =  nypd_sf_package) %>%
               bringToFront = TRUE),label = ~glue::glue("This is: {precinct}"))
 
 map_sf_package
+# see leaflet doc for explanation
+
+pal <- colorNumeric(
+  palette = "Blues"
+  ,domain = ds1$n
+  ,na.color = NA
+)
+
+map_sf_package_color <- leaflet(data =  merge_data) %>%
+  addTiles() %>%
+  addPolygons(
+    color = "black"
+    ,weight = 1
+    ,fillOpacity = 0.8
+    ,fillColor = ~pal(n)
+    ,highlightOptions = highlightOptions(
+      color = "white"
+      ,weight = 2
+      ,bringToFront = TRUE
+      )
+    ,label = ~glue::glue(
+      "This is: {precinct}",
+      "They had {n} complaints" ))
+
+map_sf_package_color
