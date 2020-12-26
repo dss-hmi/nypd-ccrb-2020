@@ -1,0 +1,27 @@
+﻿item_name,item_description,item_label,entity
+unique_mos_id,"unique ID of the officer (""member of service"") ",ID MOS,officer
+first_name,Officer's first name,First Name,officer
+last_name,Officer's last name,Last Name,officer
+command_now,Officer's command assignment as of July 2020,Command Current,officer
+complaint_id,Unique ID of the complaint,ID Complaint,complaint
+month_received,Month the complaint was received by CCRB,Month Received,complaint
+year_received,Year the complaint was received by CCRB,Year Received,complaint
+month_closed,Month the complaint investigation was closed by CCRB,Month Closed,complaint
+year_closed,Year the complaint investigation was closed by CCRB,Year Closed,complaint
+command_at_incident,Officer's command assignment at the time of the incident,Command at Incident,officer
+rank_abbrev_incident,"Officer's rank at the time of the incident, abbreviation",Rank at Incident (abbr),officer
+rank_abbrev_now,"Officer's rank as of July 2020, abbreviation",Rank Now (abbr),officer
+rank_now,Officer's rank as of July 2020,Rank Now,officer
+rank_incident,Officer's rank at the time of the incident,Rank at Incident,officer
+mos_ethnicity,Officer's ethnicity,MOS Ethnicity,officer
+mos_gender,Officer's gender,MOS Gender,officer
+mos_age_incident,Officer's age at time of incident,MOS Age,officer
+complainant_ethnicity,Complainant's ethnicity,Ethnicity,complainant
+complainant_gender,Complainant's gender,Gender,complainant
+complainant_age_incident,Complainant's age at time of incident,Age,complainant
+fado_type,Top-level category of complaint,Complaint Type,complaint
+allegation,Specific category of complaint,Compaint Subtype,complaint
+precinct,Precinct associated with the complaint,Precinct,complaint
+contact_reason,Reason officer made contact with complainant,Contact Reason,contact
+outcome_description,Outcome of the contact between office and complainant,Contact Outcome,contact
+board_disposition,Finding by the CCRB,Finding Disposition,complaint
