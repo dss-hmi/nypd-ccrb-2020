@@ -21,13 +21,10 @@ ds0 <- readr::read_rds("../../../data-unshared/derived/dto.rds")
 
 # ds0 %>% summarize_all(n_distinct) %>% t() %>% as.data.frame() %>%
 
-# ds0 %>%
-#     summarize_all(n_distinct) %>%
-#     tidyr::pivot_longer(cols = names(.),names_to = "variable",  values_to = "n_unique") %>%
-#     mutate(
-#         case_when(n_uniuqe)
-#     )
-#     print(n = nrow(.))
+ds0 %>%
+    summarize_all(n_distinct) %>%
+    tidyr::pivot_longer(cols = names(.),names_to = "variable",  values_to = "n_unique") %>%
+    print(n = nrow(.))
 
 # Define UI for application that draws a histogram
 ui <- shinyUI(
