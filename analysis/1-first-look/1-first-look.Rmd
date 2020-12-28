@@ -1,0 +1,155 @@
+---
+title: "First Look at NYPD CCRB data"
+author:
+  - Andriy Koval
+  - Kyle Belanger
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    keep_md: no
+    toc_float: true
+    code_folding: hide
+  word_document:
+    keep_md: no
+    toc: no
+---
+This report records the initial exploration of the NYPD CCRB data as reported 
+by the ProPublica ([source]( https://www.propublica.org/datastore/dataset/civilian-complaints-against-new-york-city-police-officers)).
+
+The report also records the data cleaning actions motivated by the initial exploration. 
+
+
+<!-- These two chunks should be added in the beginning of every .Rmd that you want to source an .R script -->
+<!--  The 1st mandatory chunck  -->
+<!--  Set the working directory to the repository's base directory -->
+```{r, echo=F, message=F} 
+#Don't combine this call with any other chunk 
+# cat("Working directory: ", getwd()) # check where you are
+  library(knitr)
+# Rmd is in "./reports/reportA/reportA.Rmd", but now the root is "./"
+  knitr::opts_knit$set(root.dir='../../') 
+```
+
+<!--  The 2nd mandatory chunck  -->
+<!-- Set the report-wide options, and point to the external code file. -->
+```{r set_options, echo=F}
+# set options shared by all chunks
+opts_chunk$set(
+  results='show', 
+  message = TRUE,
+  comment = NA, 
+  tidy = FALSE,
+  fig.height = 5, 
+  fig.width = 9, 
+  out.width = "900px",
+  fig.path = 'figure_rmd/',     
+  dev = "png",
+  dpi = 200
+  # fig.path = 'figure_pdf/',     
+  # dev = "pdf"#,
+  # dev.args=list(pdf = list(colormodel = 'cmyk'))
+)
+echoChunks <- TRUE
+options(width=120) #So the output is 50% wider than the default.
+# connect to the file with the underlying R script  
+read_chunk("./analysis/1-first-look/1-first-look.R") 
+```
+
+# Environment 
+
+This section offers technical detail on the environment and data preparation. Non-technical readers should feel free to skip. 
+```{r load-packages, echo=echoChunks, message=FALSE}
+```
+
+```{r load-sources, echo=echoChunks, message=FALSE}
+```
+
+```{r declare-globals, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r custom-functions, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r load-data, echo=echoChunks, results='hide', message=FALSE}
+```
+
+```{r inspect-data, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r tweak-data-1, echo=echoChunks, results='show', message=FALSE}
+```
+
+```{r tweak-data-2, echo=echoChunks, results='show', message=FALSE}
+```
+
+# Variables
+
+We grouped variables according to entity for which they store information
+
+```{r variable-groups, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+# Officer
+
+```{r officer-1, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+```{r officer-2, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+```{r officer-3, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+# Complainant
+
+```{r complainant-1, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+```{r complainant-2, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+```{r complainant-3, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+# Complaint
+```{r complaint-1, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+```{r complaint-2, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+```{r complaint-3, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+# Contact 
+```{r contact-1, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+```{r contact-2, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+
+# Session Information
+
+For the sake of documentation and reproducibility, the current report was rendered in the following environment. Click the line below to expand.
+
+<details>
+
+<summary>Environment </summary>
+
+```{r session-info, echo=FALSE}
+if( requireNamespace("devtools", quietly = TRUE) ) {
+  devtools::session_info()
+} else {
+  sessionInfo()
+} 
+```
+
+
