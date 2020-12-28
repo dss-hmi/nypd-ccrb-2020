@@ -25,3 +25,5 @@ precinct,Precinct associated with the complaint,Precinct,complaint
 contact_reason,Reason officer made contact with complainant,Contact Reason,contact
 outcome_description,Outcome of the contact between office and complainant,Contact Outcome,contact
 board_disposition,Finding by the CCRB,Finding Disposition,complaint
+mos_yob,Officer's Year of Birth,Year of Birth (MOS),officer
+complainant_yob,Complainant's Year of Birth,Year of Birth (C),complainant
