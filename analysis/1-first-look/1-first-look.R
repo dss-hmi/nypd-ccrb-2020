@@ -62,8 +62,17 @@ ds1 <- ds0 %>%
   ) %>%
   mutate_at(
     c("complainant_ethnicity","mos_ethnicity"), factor
+  ) %>%
+   tidyr::separate(board_disposition,into = c("disposition", "penalty"), sep = " \\(", remove = FALSE) %>%
+  mutate(
+    penalty = str_remove(penalty, "\\)$")
   )
+
   # select(-c("year_received","month_received","year_closed","month_closed"))
+
+ds1 %>% group_by(board_disposition) %>% count() %>% arrange(desc(n))
+ds1 %>% group_by(disposition) %>% count()
+ds1 %>% group_by(penalty) %>% count()
 
 # ds1 %>% glimpse()
 
@@ -104,6 +113,8 @@ ds2 <- ds1 %>%
     ,allegation              # Specific category of complaint
     ,precinct
     ,board_disposition       # Finding disposition
+    ,disposition             #
+    ,penalty                 # Penalty applied
   # Contact ( between MOS and the complanant)
     ,contact_reason
     ,outcome_description     # Contact outcome
@@ -154,20 +165,22 @@ ds2 %>% summarize(
   neat()
 
 # how many missing shield_no?
+# Shield No is missing from 458 officers
 ds2 %>% filter(shield_no == 0L) %>%
   summarize(n_mos_with_missing_shield_no = n_distinct(unique_mos_id))%>%
   neat()
 
-# Shield No is missing from 458 officers
 
 # Are shield numbers unique?
+# No
 ds2 %>% group_by(shield_no) %>%
   summarize(n_duplicate_shields = n_distinct(unique_mos_id)) %>%
   filter(n_duplicate_shields > 1) %>%
   arrange(desc(n_duplicate_shields)) %>%
   slice(1:20)%>%
   neat()
-# No
+
+# 402 shields have at least one duplicate
 ds2 %>% group_by(shield_no) %>%
   summarize(n_duplicate_shields = n_distinct(unique_mos_id)) %>%
   filter(n_duplicate_shields > 1 & n_duplicate_shields< 458) %>%
@@ -175,22 +188,23 @@ ds2 %>% group_by(shield_no) %>%
     n_duplicated_shields = sum(n_duplicate_shields)
   )%>%
   neat()
-# 402 shields have at least one duplicate
+
+
+# 197 Shield numbers are registered to more than 1 officer
 ds2 %>% group_by(shield_no) %>%
   summarize(n_duplicates = n_distinct(unique_mos_id)) %>%
   filter(n_duplicates > 1 & n_duplicates< 458) %>%
   group_by(n_duplicates) %>%
   summarize(n_shields = n())%>%
   neat()
-# 197 Shield numbers are registered to more than 1 officer
 
+# Each officer has no more than 1 shield number
 ds2 %>% group_by(unique_mos_id) %>%
   summarize(n_duplicate_ids = n_distinct(shield_no)) %>%
   filter(n_duplicate_ids > 1) %>%
   arrange(desc(n_duplicate_ids))%>%
   neat()
 
-# Each officer has no more than 1 shield number
 
 
 # Rank of the officer (as of July 2020)
@@ -212,6 +226,7 @@ ds2 %>% group_by(mos_gender) %>% count()%>% neat()
 # Age
 ds2 %>% TabularManifest::histogram_continuous("mos_age_incident")
 
+# ---- officer-2 -------------------------
 
 # ---- complainant-1 ------------------------------------------------------
 
@@ -233,14 +248,29 @@ ds2 %>%
   arrange(complainant_age_incident)%>% neat()
 
 # ---- complainant-3 ------------------------------------------------------
+ds2 %>% glimpse()
+
+
+# ---- complaint-1 ------------------------------------------------------
+ds2 %>% group_by(fado_type) %>% count()%>% arrange(desc(n))
+ds2 %>%
+  group_by(fado_type,allegation) %>%
+  count() %>%
+  arrange(fado_type,desc(n)) %>%
+  print(n = nrow(.))
+# ---- complaint-2 ------------------------------------------------------
+ds2 %>% group_by(board_disposition) %>% count()%>% arrange(desc(n))
 
 # ---- contact-1 ------------------------------------------------------
+ds2 %>% group_by(contact_reason) %>% count() %>% arrange(desc(n))
+
+ds2 %>% group_by(outcome_description) %>% count() %>% arrange(desc(n))
 
 # ---- contact-2 ------------------------------------------------------
 
 # ---- save-to-disk --------------------------------------------------------
 
-# ds1 %>% readr::write_rds("./data-unshared/derived/dto.rds")
+ds2 %>% readr::write_rds("./data-unshared/derived/dto.rds")
 
 # ----- publisher --------------------
 path <- "./analysis/1-first-look/1-first-look.Rmd"
