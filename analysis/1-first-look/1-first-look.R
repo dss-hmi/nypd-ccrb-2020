@@ -70,9 +70,9 @@ ds1 <- ds0 %>%
 
   # select(-c("year_received","month_received","year_closed","month_closed"))
 
-ds1 %>% group_by(board_disposition) %>% count() %>% arrange(desc(n))
-ds1 %>% group_by(disposition) %>% count()
-ds1 %>% group_by(penalty) %>% count()
+# ds1 %>% group_by(board_disposition) %>% count() %>% arrange(desc(n))
+# ds1 %>% group_by(disposition) %>% count()
+# ds1 %>% group_by(penalty) %>% count()
 
 # ds1 %>% glimpse()
 
@@ -122,6 +122,8 @@ ds2 <- ds1 %>%
 # ds2 %>% glimpse()
 # setdiff(names(ds1),names(ds2))
 #
+
+
 
 # ----- variable-groups ---------------------
 metadata %>%
@@ -248,23 +250,24 @@ ds2 %>%
   arrange(complainant_age_incident)%>% neat()
 
 # ---- complainant-3 ------------------------------------------------------
-ds2 %>% glimpse()
+# ds2 %>% glimpse()
 
 
 # ---- complaint-1 ------------------------------------------------------
-ds2 %>% group_by(fado_type) %>% count()%>% arrange(desc(n))
+ds2 %>% group_by(fado_type) %>% count()%>% arrange(desc(n)) %>% neat()
 ds2 %>%
   group_by(fado_type,allegation) %>%
   count() %>%
   arrange(fado_type,desc(n)) %>%
-  print(n = nrow(.))
+  neat_DT()
 # ---- complaint-2 ------------------------------------------------------
-ds2 %>% group_by(board_disposition) %>% count()%>% arrange(desc(n))
+ds2 %>% group_by(board_disposition, disposition) %>% count()%>% arrange(desc(n)) %>% neat()
+
 
 # ---- contact-1 ------------------------------------------------------
-ds2 %>% group_by(contact_reason) %>% count() %>% arrange(desc(n))
+ds2 %>% group_by(contact_reason) %>% count() %>% arrange(desc(n)) %>% neat_DT()
 
-ds2 %>% group_by(outcome_description) %>% count() %>% arrange(desc(n))
+ds2 %>% group_by(outcome_description) %>% count() %>% arrange(desc(n)) %>% neat()
 
 # ---- contact-2 ------------------------------------------------------
 
