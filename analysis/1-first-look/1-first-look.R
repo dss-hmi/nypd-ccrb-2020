@@ -321,6 +321,8 @@ ds2 %>% counts_and_percent(c("outcome_description"))%>% arrange(desc(n)) %>% nea
 # ---- save-to-disk --------------------------------------------------------
 
 ds2 %>% readr::write_rds("./data-unshared/derived/dto.rds")
+ds2 %>% readr::write_rds("./data-public/derived/nypd-ccrb-cleaned.rds")
+ds2 %>% readr::write_csv("./data-public/derived/nypd-ccrb-cleaned.csv")
 
 # ----- publisher --------------------
 path <- "./analysis/1-first-look/1-first-look.Rmd"
