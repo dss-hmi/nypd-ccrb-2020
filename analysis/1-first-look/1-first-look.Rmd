@@ -7,12 +7,9 @@ output:
   html_document:
     toc: true
     toc_depth: 3
-    keep_md: no
+    keep_md: yes
     toc_float: true
     code_folding: hide
-  word_document:
-    keep_md: no
-    toc: no
 ---
 This report records the initial exploration of the NYPD CCRB data as reported 
 by the ProPublica ([source]( https://www.propublica.org/datastore/dataset/civilian-complaints-against-new-york-city-police-officers)).
@@ -73,7 +70,7 @@ This section offers technical detail on the environment and data preparation. No
 
 ```{r load-data, echo=echoChunks, results='hide', message=FALSE}
 ```
-
+ )
 ```{r inspect-data, echo=echoChunks, results='show', message=FALSE}
 ```
 
@@ -83,16 +80,25 @@ This section offers technical detail on the environment and data preparation. No
 ```{r tweak-data-2, echo=echoChunks, results='show', message=FALSE}
 ```
 
+# Data
+
+This data was obtained by [ProPublica](https://projects.propublica.org/nypd-ccrb/) through a records request made to the CCRB. It includes fully investigated allegations only for officers who were members of the department as of late June 2020 and against whom the CCRB has substantiated at least one allegation. [Read More](https://projects.propublica.org/nypd-ccrb/#about)
+
+
+Note that data reported by [NY Civil Liberty Union](https://github.com/new-york-civil-liberties-union/NYPD-Misconduct-Complaint-Database) contains about 10 times more records (`323,911`) than ProPublica's (`33,358`) data presented here.  One way to think about the difference between these two data sets is to take CLU as as the universe of all allegations registerd, while ProPublica's would represent the universe of confirmed offenders.  
+
 # Variables
 
-We grouped variables according to entity for which they store information
+We grouped the inital variables according to entity for which they store information
 
 ```{r variable-groups, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
 ```
 
 # Officer
 
-```{r officer-1, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+This section provides basic descriptive related to Members of Service (MOS, i.e. police officers)
+
+```{r officer-1, echo=TRUE, results='show', message=F, warning=F, cache=T}
 ```
 
 ```{r officer-2, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
@@ -133,6 +139,14 @@ We grouped variables according to entity for which they store information
 
 
 ```{r contact-2, echo=TRUE, results='show', message=FALSE, warning=FALSE, cache=T}
+```
+
+# Product 
+
+After initial investigation and cleaning, the data that is passed to subsequent analysis contains:
+(click on the `Code` button to unfold)
+
+```{r tweak-data-2, echo=T, results='show', message=FALSE, eval=F}
 ```
 
 
