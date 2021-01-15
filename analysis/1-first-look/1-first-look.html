@@ -8346,6 +8346,9 @@ ds2 &lt;- ds1 %&gt;%
     ,contact_reason
     ,outcome_description     # Contact outcome
   )</code></pre>
+<pre class="r"><code>ds2 %&gt;% readr::write_rds(&quot;./data-unshared/derived/dto.rds&quot;)
+ds2 %&gt;% readr::write_rds(&quot;./data-public/derived/nypd-ccrb-cleaned.rds&quot;)
+ds2 %&gt;% readr::write_csv(&quot;./data-public/derived/nypd-ccrb-cleaned.csv&quot;)</code></pre>
 </div>
 <div id="session-information" class="section level1">
 <h1>Session Information</h1>
