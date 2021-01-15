@@ -25,6 +25,24 @@ ggplot2::theme_set(
     )
 )
 
+mos_rank_order <- c("Police Officer", "Detective", "Sergeant", "Lieutenant",
+                    "Captain", "Deputy Inspector", "Inspector","Chief")
+
+ethnicity5 <- c("White","Black","Hispanic","Other", "(Missing)")
+gender4 <- c("Male","Female","Other","(Missing)")
+
+counts_and_percent <- function(d,varnames){
+  dt <- ds2 %>%
+    group_by(.dots = varnames) %>%
+    count() %>%
+    ungroup() %>%
+    mutate(pct = scales::percent(n/sum(n), accuracy=.1))
+  return(dt)
+}
+# How to use
+# counts_and_percent(ds2, c("rank_incident","rank_now")) %>% neat()
+
+
 # ---- load-data -------------------------------------------------------------
 ds0 <- readr::read_rds(path_input)
 # metadata <- readr::read_csv("../../data-public/metadata/better-labels.csv")
@@ -46,17 +64,25 @@ ds1 <- ds0 %>%
     ,complainant_yob = (year_received - complainant_age_incident)
   ) %>%
   mutate(
-    complainant_ethnicity = replace_na(complainant_ethnicity, "Unknown")
+    complainant_ethnicity = replace_na(complainant_ethnicity, "(Missing)")
+    ,complainant_ethnicity5 = fct_recode(
+      complainant_ethnicity,
+      "Other" = "American Indian"
+      ,"Other" = "Asian"
+      ,"Other" = "Other Race"
+      ,"(Missing)" = "Refused"
+      ,"(Missing)" = "Unknown"
+    ) %>% fct_relevel(ethnicity5)
     ,mos_gender = fct_recode(mos_gender, "Female"="F", "Male"="M")
     ,complainant_gender = replace_na(complainant_gender,"(Missing)")
-    ,complainant_gender = fct_recode(complainant_gender,
+    ,complainant_gender4 = fct_recode(complainant_gender,
                                         "Female" = "Female"
                                         ,"Male" = "Male"
                                         ,"Other" = "Gender non-conforming"
                                         ,"Other" = "Transman (FTM)"
                                         ,"Other" = "Transwoman (MTF)"
                                         ,"(Missing)" = "Not described"
-                                        )
+                                        ) %>% fct_relevel(gender4)
     ,complainant_age_incident = ifelse(complainant_age_incident < 10,NA,complainant_age_incident)
 
   ) %>%
@@ -66,6 +92,20 @@ ds1 <- ds0 %>%
    tidyr::separate(board_disposition,into = c("disposition", "penalty"), sep = " \\(", remove = FALSE) %>%
   mutate(
     penalty = str_remove(penalty, "\\)$")
+    ,disposition = fct_relevel(disposition, "Exonerated","Unsubstantiated","Substantiated")
+  ) %>%
+  mutate(
+    rank_now = fct_recode(
+      rank_now,
+      "Chief" = "Chiefs and other ranks"
+    ) %>%
+      fct_relevel(mos_rank_order)
+    ,rank_incident = fct_recode(
+      rank_incident,
+      "Chief" = "Chiefs and other ranks"
+    ) %>%
+      fct_relevel(mos_rank_order)
+
   )
 
   # select(-c("year_received","month_received","year_closed","month_closed"))
@@ -89,41 +129,34 @@ ds2 <- ds1 %>%
     ,mos_yob                 # Year of birth
     ,rank_now                # Officer's rank as of July 2020
     ,rank_incident           #  --- at the time of the incident
-    ,rank_abbrev_now         #
-    ,rank_abbrev_incident    #
+    ,rank_abbrev_now         # Greater granularity of rank_now
+    ,rank_abbrev_incident    # Greater granularity of rank_incident
     ,command_now             # Officer's command assignment as of July 2020
-    ,command_at_incident     #
+    ,command_at_incident     # --- at the time of the incident
     ,first_name
     ,last_name
     ,shield_no
   # Complainant
     ,complainant_ethnicity
-    ,complainant_gender
-    ,complainant_age_incident
-    ,complainant_yob
+    ,complainant_ethnicity5   # collapsed into 5 categories
+    ,complainant_gender       # original values
+    ,complainant_gender4      # Collapsed into 5 categories
+    ,complainant_age_incident # less than 10 converted to NA
+    ,complainant_yob          # year of birth
   # Complaint
     ,complaint_id
-    ,date_received
-    ,date_closed
-    # ,year_received
-    # ,month_received
-    # ,year_closed
-    # ,month_closed
+    ,date_received           # transformed from year + month (15th of the month)
+    ,date_closed             # transformed from year + month (15th of the month)
     ,fado_type               # Top-level category of complaint
     ,allegation              # Specific category of complaint
     ,precinct
     ,board_disposition       # Finding disposition
-    ,disposition             #
-    ,penalty                 # Penalty applied
+    ,disposition             # Decision        (part of board_disposition)
+    ,penalty                 # Penalty applied (part of board_disposition)
   # Contact ( between MOS and the complanant)
     ,contact_reason
     ,outcome_description     # Contact outcome
   )
-# ds2 %>% glimpse()
-# setdiff(names(ds1),names(ds2))
-#
-
-
 
 # ----- variable-groups ---------------------
 metadata %>%
@@ -157,7 +190,6 @@ metadata %>%
   neat()
 # ---- officer-1 -------------------------
 
-# ---- officer-2 -------------------------
 # How many distinct officers and complaints represented in the data?
 ds2 %>% summarize(
   n_officers = n_distinct(unique_mos_id)
@@ -208,66 +240,81 @@ ds2 %>% group_by(unique_mos_id) %>%
   neat()
 
 
+# ---- officer-2 -------------------------
+
 
 # Rank of the officer (as of July 2020)
-ds2 %>% group_by(rank_now) %>% count() %>% neat()
-ds2 %>% group_by(rank_now, rank_abbrev_now) %>% count()%>%neat()
+ds2 %>% counts_and_percent("rank_now") %>% neat()
 # Abbreviated rank offers greater detail
+ds2 %>% counts_and_percent(c("rank_now","rank_abbrev_now")) %>% neat()
+
+
 
 # Rank of the officer (at the time of the indident)
-ds2 %>% group_by(rank_incident) %>% count()%>% neat()
-ds2 %>% group_by(rank_incident, rank_abbrev_incident) %>% count()%>% neat()
+ds2 %>% counts_and_percent("rank_incident") %>% neat()
 # Abbreviated rank offers greater detail
+ds2 %>% counts_and_percent(c("rank_incident","rank_abbrev_incident")) %>% neat()
+
+# How did the rank of officers change since the incident?
+ds2 %>% counts_and_percent(c("rank_incident","rank_now")) %>% neat()
+
+# ---- officer-3 -------------------------
 
 # Ethnicity
-ds2 %>% group_by(mos_ethnicity) %>% count()%>% neat()
+ds2 %>% counts_and_percent(c("mos_ethnicity")) %>% neat()
 
 # Gender
-ds2 %>% group_by(mos_gender) %>% count()%>% neat()
+ds2 %>% counts_and_percent(c("mos_gender")) %>% neat()
 
 # Age
 ds2 %>% TabularManifest::histogram_continuous("mos_age_incident")
 
-# ---- officer-2 -------------------------
 
 # ---- complainant-1 ------------------------------------------------------
 
 # ---- complainant-2 ------------------------------------------------------
-ds2 %>% group_by(complainant_ethnicity) %>% count()%>% neat()
-ds2 %>% group_by(complainant_gender) %>% count()%>% neat()
+# What is the prevalence of ethnic backgrounds
+ds2 %>% counts_and_percent(c("complainant_ethnicity5","complainant_ethnicity")) %>% neat()
+ds2 %>% counts_and_percent(c("complainant_ethnicity5")) %>% neat()
+
+
+ds2 %>% counts_and_percent(c("complainant_gender4","complainant_gender")) %>% neat()
+ds2 %>% counts_and_percent(c("complainant_gender4")) %>% neat()
+
+
 ds2 %>% TabularManifest::histogram_continuous("complainant_age_incident")
 
 # However,
 ds0 %>%
   group_by(complainant_age_incident) %>%
   summarize(n = n()) %>%
-  arrange(complainant_age_incident)%>% neat()
+  arrange(complainant_age_incident)%>% neat_DT()
 # There appears to be some data errors in complainant age
 # all records with age < 10 are transformed into NA
 ds2 %>%
   group_by(complainant_age_incident) %>%
   summarize(n = n()) %>%
-  arrange(complainant_age_incident)%>% neat()
+  arrange(complainant_age_incident)%>% neat_DT()
 
 # ---- complainant-3 ------------------------------------------------------
 # ds2 %>% glimpse()
 
 
 # ---- complaint-1 ------------------------------------------------------
-ds2 %>% group_by(fado_type) %>% count()%>% arrange(desc(n)) %>% neat()
-ds2 %>%
-  group_by(fado_type,allegation) %>%
-  count() %>%
-  arrange(fado_type,desc(n)) %>%
-  neat_DT()
+ds2 %>% counts_and_percent("fado_type") %>% neat()
+ds2 %>% counts_and_percent(c("fado_type","allegation")) %>% neat_DT()
+
+
 # ---- complaint-2 ------------------------------------------------------
-ds2 %>% group_by(board_disposition, disposition) %>% count()%>% arrange(desc(n)) %>% neat()
+ds2 %>% counts_and_percent(c("disposition","penalty")) %>% neat()
+ds2 %>% counts_and_percent(c("disposition")) %>% neat()
 
 
 # ---- contact-1 ------------------------------------------------------
-ds2 %>% group_by(contact_reason) %>% count() %>% arrange(desc(n)) %>% neat_DT()
+ds2 %>% counts_and_percent(c("contact_reason"))%>% arrange(desc(n)) %>% neat_DT()
 
-ds2 %>% group_by(outcome_description) %>% count() %>% arrange(desc(n)) %>% neat()
+ds2 %>% counts_and_percent(c("outcome_description"))%>% arrange(desc(n)) %>% neat_DT()
+
 
 # ---- contact-2 ------------------------------------------------------
 
